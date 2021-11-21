@@ -1,29 +1,33 @@
 package Server;
 
-import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server {
-    public static DataOutputStream dataOutputStream = null;
-    public static DataInputStream dataInputStream = null;
+    public static List<Socket> clientSockets;
 
-    public static void main(String[] args) {
-        try(ServerSocket serverSocket = new ServerSocket(5000)){
-            System.out.println("listening to port:5000");
+    public static void main(String[] args) throws Exception{
+        ServerSocket serverSocket = new ServerSocket(5000);
+        System.out.println("listening to port:5000");
+
+        clientSockets = new ArrayList<>();
+
+        ServerBroadcast serverBroadcast = new ServerBroadcast();
+        serverBroadcast.start();
+
+        int userCount = 0;
+
+        while(true){
             Socket clientSocket = serverSocket.accept();
             System.out.println(clientSocket+" connected\n");
-            dataInputStream = new DataInputStream(clientSocket.getInputStream());
-            dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+            clientSockets.add(clientSocket);
+            userCount++;
+            System.out.println("user "+userCount+" connected");
 
-            ServerRead serverRead = new ServerRead();
-            serverRead.start();
-
-            ServerWrite serverWrite = new ServerWrite();
-            serverWrite.start();
-
-        } catch (Exception e){
-            System.out.println(e.toString());
+            ServerClientInteraction serverClientInteraction = new ServerClientInteraction(clientSocket);
+            serverClientInteraction.start();
         }
     }
 }

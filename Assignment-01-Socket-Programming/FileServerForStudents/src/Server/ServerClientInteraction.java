@@ -1,22 +1,24 @@
-package Client;
+package Server;
 
 import Client.Client;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class ClientRead extends Thread{
-    private DataInputStream dataInputStream;
+public class ServerClientInteraction extends Thread{
     private Socket socket;
+    private DataInputStream dataInputStream;
 
-    public ClientRead(Socket socket) {
+    public ServerClientInteraction(Socket socket) {
         this.socket = socket;
-        try{
+        try {
             dataInputStream = new DataInputStream(socket.getInputStream());
         }catch (IOException e){
             e.printStackTrace();
         }
+
     }
 
     @Override
