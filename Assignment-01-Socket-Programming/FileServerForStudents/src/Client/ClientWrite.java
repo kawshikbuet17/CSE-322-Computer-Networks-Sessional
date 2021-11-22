@@ -1,6 +1,7 @@
 package Client;
 
 import Client.Client;
+import FileSendReceive.FileSendProtocol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -26,10 +27,13 @@ public class ClientWrite extends Thread{
                 Scanner scanner = new Scanner(System.in);
                 String message = scanner.nextLine();
                 dataOutputStream.writeUTF(message);
-                if(message.equalsIgnoreCase("exit()"))
-                    break;
+                String []arr = message.split("\\ ");
+                if(arr[0].equalsIgnoreCase("upload")){
+                    FileSendProtocol fileSendProtocol = new FileSendProtocol(socket, arr[2]);
+                    fileSendProtocol.sendFile(arr[1]);
+                }
             }
-        }catch (IOException e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -1,6 +1,8 @@
 package Server;
 
 import Client.Client;
+import FileSendReceive.FileReceiveProtocol;
+import FileSendReceive.FileSendProtocol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -19,7 +21,6 @@ public class ServerClientInteraction extends Thread{
         }catch (IOException e){
             e.printStackTrace();
         }
-
     }
 
     public void createFolder(String folderName){
@@ -31,6 +32,10 @@ public class ServerClientInteraction extends Thread{
         file.mkdir();
         file = new File("Storage/"+folderName+"/private");
         file.mkdir();
+    }
+
+    public void downloadApproval(String path){
+
     }
 
     @Override
@@ -48,10 +53,25 @@ public class ServerClientInteraction extends Thread{
                     System.out.println("username : " + arr[1]);
                     createFolder(arr[1]);
                 }
-                if(message.equalsIgnoreCase("exit()"))
-                    break;
+
+                if(arr[0].equalsIgnoreCase("upload")){
+                    if(arr[2].equalsIgnoreCase("private")){
+                        FileReceiveProtocol fileReceiveProtocol = new FileReceiveProtocol(socket, "private");
+                        String userName = Server.socketUserHashMap.get(socket).username;
+                        String tempFileName = userName+"_"+arr[1];
+                        fileReceiveProtocol.receiveFile(tempFileName);
+                        fileReceiveProtocol.renameAndMove(tempFileName, "Storage/"+userName+"/private/"+tempFileName);
+                    }
+                    else{
+                        FileReceiveProtocol fileReceiveProtocol = new FileReceiveProtocol(socket, "public");
+                        String userName = Server.socketUserHashMap.get(socket).username;
+                        String tempFileName = userName+"_"+arr[1];
+                        fileReceiveProtocol.receiveFile(tempFileName);
+                        fileReceiveProtocol.renameAndMove(tempFileName, "Storage/"+userName+"/public/"+tempFileName);
+                    }
+                }
             }
-        }catch (IOException e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

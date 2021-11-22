@@ -23,7 +23,7 @@ public class Server {
 
         while(true){
             Socket clientSocket = serverSocket.accept();
-            System.out.println(clientSocket+" connected\n");
+            System.out.println(clientSocket+" connected");
             clientSockets.add(clientSocket);
             userCount++;
             System.out.println("user "+userCount+" connected");
