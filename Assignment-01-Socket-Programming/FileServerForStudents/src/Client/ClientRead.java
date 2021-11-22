@@ -23,6 +23,8 @@ public class ClientRead extends Thread{
     public void run(){
         try{
             String message;
+            message = "To log in type: login <your username>";
+            System.out.println(message);
             while (true) {
                 message = dataInputStream.readUTF();
                 System.out.println(message);
