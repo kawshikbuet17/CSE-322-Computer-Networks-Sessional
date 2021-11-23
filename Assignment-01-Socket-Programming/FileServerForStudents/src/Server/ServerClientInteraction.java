@@ -7,14 +7,17 @@ import FileManagement.FileViewProtocol;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerClientInteraction extends Thread{
     private Socket socket;
+    private Socket socketForDownload;
     private DataInputStream dataInputStream;
 
-    public ServerClientInteraction(Socket socket) {
+    public ServerClientInteraction(Socket socket, Socket socketForDownload) {
         this.socket = socket;
+        this.socketForDownload = socketForDownload;
         try {
             dataInputStream = new DataInputStream(socket.getInputStream());
         }catch (IOException e){
@@ -49,6 +52,7 @@ public class ServerClientInteraction extends Thread{
                     User user = new User();
                     user.addUserName(arr[1]);
                     Server.socketUserHashMap.put(socket, user);
+                    Server.socketUserHashMapForDownload.put(socketForDownload, user);
                     System.out.println("username : " + arr[1]);
                     createFolder(arr[1]);
                 }
@@ -79,12 +83,12 @@ public class ServerClientInteraction extends Thread{
                     String []filename = arr[1].split("/");
                     if(filename[2].equalsIgnoreCase("private")){
                         if(filename[1].equalsIgnoreCase(Server.socketUserHashMap.get(socket).getName())){
-                            FileSendProtocol fileSendProtocol = new FileSendProtocol(socket, "private");
+                            FileSendProtocol fileSendProtocol = new FileSendProtocol(socketForDownload, "private");
                             fileSendProtocol.sendFile(arr[1]);
                         }
                     }
                     else{
-                        FileSendProtocol fileSendProtocol = new FileSendProtocol(socket, "public");
+                        FileSendProtocol fileSendProtocol = new FileSendProtocol(socketForDownload, "public");
                         fileSendProtocol.sendFile(arr[1]);
                     }
                 }

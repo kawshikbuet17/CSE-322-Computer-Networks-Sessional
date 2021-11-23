@@ -1,5 +1,6 @@
 package Client;
 
+import FileManagement.ClientDownload;
 import FileManagement.FileReceiveProtocol;
 import FileManagement.FileSendProtocol;
 
@@ -41,8 +42,7 @@ public class ClientWrite extends Thread{
 
                 if(arr[0].equalsIgnoreCase("download")){
                     String []filename = arr[1].split("/");
-                    FileReceiveProtocol fileReceiveProtocol = new FileReceiveProtocol(socket, "noneed");
-                    fileReceiveProtocol.receiveFile(filename[3]);
+                    Client.clientDownload.downloadFile(filename[3]);
                 }
             }
         } catch (Exception e) {
