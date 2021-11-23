@@ -5,6 +5,7 @@ import FileManagement.FileSendProtocol;
 import FileManagement.FileViewProtocol;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,12 +15,14 @@ public class ServerClientInteraction extends Thread{
     private Socket socket;
     private Socket socketForDownload;
     private DataInputStream dataInputStream;
+    private DataOutputStream dataOutputStream;
 
     public ServerClientInteraction(Socket socket, Socket socketForDownload) {
         this.socket = socket;
         this.socketForDownload = socketForDownload;
         try {
             dataInputStream = new DataInputStream(socket.getInputStream());
+            dataOutputStream = new DataOutputStream(socket.getOutputStream());
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -91,6 +94,16 @@ public class ServerClientInteraction extends Thread{
                         FileSendProtocol fileSendProtocol = new FileSendProtocol(socketForDownload, "public");
                         fileSendProtocol.sendFile(arr[1]);
                     }
+                }
+
+                if(arr[0].equalsIgnoreCase("online")){
+                    String onlineUsers = "";
+                    for(int i=0; i<Server.clientSockets.size(); i++){
+                        if (!Server.clientSockets.get(i).isClosed()){
+                            onlineUsers += Server.socketUserHashMap.get(Server.clientSockets.get(i)).getName()+"\n";
+                        }
+                    }
+                    dataOutputStream.writeUTF(onlineUsers);
                 }
             }
         } catch (Exception e) {
