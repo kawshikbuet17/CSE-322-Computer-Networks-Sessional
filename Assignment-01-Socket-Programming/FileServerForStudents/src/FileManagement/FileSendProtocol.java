@@ -1,4 +1,4 @@
-package FileSendReceive;
+package FileManagement;
 
 import java.io.*;
 import java.net.Socket;

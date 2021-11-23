@@ -1,9 +1,8 @@
 package Client;
 
-import Client.Client;
-import FileSendReceive.FileSendProtocol;
+import FileManagement.FileReceiveProtocol;
+import FileManagement.FileSendProtocol;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -32,10 +31,22 @@ public class ClientWrite extends Thread{
                     FileSendProtocol fileSendProtocol = new FileSendProtocol(socket, arr[2]);
                     fileSendProtocol.sendFile(arr[1]);
                 }
+
+                if(arr[0].equalsIgnoreCase("inbox")){
+                    for(int i=0; i<Client.inbox.size(); i++){
+                        System.out.println(Client.inbox.get(i));
+                    }
+                    Client.inbox.clear();
+                }
+
+                if(arr[0].equalsIgnoreCase("download")){
+                    String []filename = arr[1].split("/");
+                    FileReceiveProtocol fileReceiveProtocol = new FileReceiveProtocol(socket, "noneed");
+                    fileReceiveProtocol.receiveFile(filename[3]);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

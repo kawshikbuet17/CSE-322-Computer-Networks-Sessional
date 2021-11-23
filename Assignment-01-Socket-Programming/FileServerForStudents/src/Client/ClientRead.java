@@ -27,13 +27,13 @@ public class ClientRead extends Thread{
             System.out.println(message);
             while (true) {
                 message = dataInputStream.readUTF();
-                System.out.println(message);
+//                System.out.println(message);
+                Client.inbox.add(message);
                 if(message.equalsIgnoreCase("exit()"))
                     break;
             }
         }catch (IOException e){
             e.printStackTrace();
         }
-
     }
 }

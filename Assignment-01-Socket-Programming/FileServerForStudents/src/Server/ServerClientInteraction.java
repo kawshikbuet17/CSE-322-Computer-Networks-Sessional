@@ -1,11 +1,10 @@
 package Server;
 
-import Client.Client;
-import FileSendReceive.FileReceiveProtocol;
-import FileSendReceive.FileSendProtocol;
+import FileManagement.FileReceiveProtocol;
+import FileManagement.FileSendProtocol;
+import FileManagement.FileViewProtocol;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
@@ -68,6 +67,25 @@ public class ServerClientInteraction extends Thread{
                         String tempFileName = userName+"_"+arr[1];
                         fileReceiveProtocol.receiveFile(tempFileName);
                         fileReceiveProtocol.renameAndMove(tempFileName, "Storage/"+userName+"/public/"+tempFileName);
+                    }
+                }
+
+                if(arr[0].equalsIgnoreCase("viewfiles")){
+                    FileViewProtocol fileViewProtocol = new FileViewProtocol(socket);
+                    fileViewProtocol.viewFiles(Server.socketUserHashMap.get(socket));
+                }
+
+                if(arr[0].equalsIgnoreCase("download")){
+                    String []filename = arr[1].split("/");
+                    if(filename[2].equalsIgnoreCase("private")){
+                        if(filename[1].equalsIgnoreCase(Server.socketUserHashMap.get(socket).getName())){
+                            FileSendProtocol fileSendProtocol = new FileSendProtocol(socket, "private");
+                            fileSendProtocol.sendFile(arr[1]);
+                        }
+                    }
+                    else{
+                        FileSendProtocol fileSendProtocol = new FileSendProtocol(socket, "public");
+                        fileSendProtocol.sendFile(arr[1]);
                     }
                 }
             }

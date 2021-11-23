@@ -11,12 +11,16 @@ public class User {
     public User() {
         privateFilenames = new ArrayList<>();
         publicFilenames = new ArrayList<>();
+        username = "notgiven";
     }
 
     public void addUserName(String username){
         this.username = username;
     }
 
+    public String getName(){
+        return username;
+    }
     public void addPrivateFile(String filename){
         privateFilenames.add(filename);
     }
