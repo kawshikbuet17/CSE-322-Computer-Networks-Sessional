@@ -26,14 +26,17 @@ public class ClientRead extends Thread{
             message = "To log in type: login <your username>";
             System.out.println(message);
             while (true) {
-                message = dataInputStream.readUTF();
-//                System.out.println(message);
-                Client.inbox.add(message);
-                if(message.equalsIgnoreCase("exit()"))
+                if(message.equalsIgnoreCase("logout")){
+                    System.out.println("You are logged out");
                     break;
+                }
+                message = dataInputStream.readUTF();
+                System.out.println(message);
+//                Client.inbox.add(message);
             }
-        }catch (IOException e){
-            e.printStackTrace();
+            dataInputStream.close();
+        }catch (Exception e){
+            ;
         }
     }
 }

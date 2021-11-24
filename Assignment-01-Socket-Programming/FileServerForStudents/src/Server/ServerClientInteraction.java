@@ -48,6 +48,9 @@ public class ServerClientInteraction extends Thread{
         try{
             String message;
             while (true) {
+                if(socket.isClosed()){
+                    break;
+                }
                 message = dataInputStream.readUTF();
                 System.out.println(message);
                 String []arr = message.split("\\ ");
@@ -104,6 +107,12 @@ public class ServerClientInteraction extends Thread{
                         }
                     }
                     dataOutputStream.writeUTF(onlineUsers);
+                }
+
+                if(arr[0].equalsIgnoreCase("logout")){
+                    dataOutputStream.writeUTF("logout");
+                    socket.close();
+                    socketForDownload.close();
                 }
             }
         } catch (Exception e) {
