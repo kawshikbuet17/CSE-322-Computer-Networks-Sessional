@@ -1,4 +1,4 @@
-package FileManagement;
+package Server;
 
 import Server.User;
 
@@ -41,5 +41,6 @@ public class FileViewProtocol {
             }
         }
         dataOutputStream.writeUTF(message);
+        dataOutputStream.flush();
     }
 }

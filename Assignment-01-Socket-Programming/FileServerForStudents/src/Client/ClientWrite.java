@@ -1,7 +1,5 @@
 package Client;
 
-import FileManagement.FileSendWithAck;
-
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Scanner;

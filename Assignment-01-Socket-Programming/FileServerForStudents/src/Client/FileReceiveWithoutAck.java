@@ -1,20 +1,22 @@
-package FileManagement;
+package Client;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class FileReceiveWithAck extends Thread{
+public class FileReceiveWithoutAck extends Thread{
     private Socket socket;
     private DataInputStream dataInputStream;
-    private DataOutputStream dataOutputStream;
     private String privacy;
     private String fileName;
     private String srcPath;
     private String destPath;
 
-    public FileReceiveWithAck(Socket socket, String fileName, String privacy, String srcPath, String destPath){
+    public FileReceiveWithoutAck(Socket socket, String fileName, String privacy, String srcPath, String destPath){
         this.socket = socket;
         this.privacy = privacy;
         this.fileName = fileName;
@@ -22,7 +24,6 @@ public class FileReceiveWithAck extends Thread{
         this.destPath = destPath;
         try{
             dataInputStream = new DataInputStream(socket.getInputStream());
-            dataOutputStream = new DataOutputStream(socket.getOutputStream());
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -34,27 +35,20 @@ public class FileReceiveWithAck extends Thread{
             int bytes = 0;
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             long size = dataInputStream.readLong();     // read file size
-            long totalChunks = dataInputStream.readLong();
-            long ack = 0;
-            int chunkSize = 4*1024;
-            byte[] buffer = new byte[chunkSize];
+            byte[] buffer = new byte[4*1024];
             while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
-                dataOutputStream.writeUTF("ack");
-                dataOutputStream.flush();
                 fileOutputStream.write(buffer,0,bytes);
                 size -= bytes;      // read upto file size
-                ack++;
             }
             fileOutputStream.close();
-            if(totalChunks==ack){
-                System.out.println(fileName+" received successfully");
-                Files.move(Paths.get(srcPath), Paths.get(destPath));
+            if(srcPath.equalsIgnoreCase("noneed")|| destPath.equalsIgnoreCase("noneed")){
+                File file = new File("Downloads");
+                file.mkdir();
+                Files.move(Paths.get(fileName), Paths.get("Downloads/"+fileName));
             }else{
-                System.out.println(fileName+" receiving failed");
-                File file = new File(srcPath);
-                file.delete();
+                Files.move(Paths.get(srcPath), Paths.get(destPath));
             }
-
+            System.out.println("Download Complete");
         }catch (Exception e){
             e.printStackTrace();
         }

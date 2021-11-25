@@ -1,7 +1,5 @@
 package Server;
 
-import FileManagement.*;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -100,10 +98,28 @@ public class ServerClientInteraction extends Thread{
                         }
                     }
                     dataOutputStream.writeUTF(onlineUsers);
+                    dataOutputStream.flush();
+                }
+
+                if(arr[0].equalsIgnoreCase("request")){
+                    String userName = Server.socketUserHashMap1.get(socket1).getUserName();
+                    for(int i=0; i<Server.clientSockets1.size(); i++){
+                        if(!Server.clientSockets1.get(i).isClosed()){
+                            DataOutputStream dataOutputStream1 = new DataOutputStream(Server.clientSockets1.get(i).getOutputStream());
+                            dataOutputStream1.writeUTF(userName+ " requested for file "+arr[1]);
+                            dataOutputStream1.flush();
+                        }
+                    }
+                }
+
+                if(arr[0].equalsIgnoreCase("inbox")){
+                    dataOutputStream.writeUTF(Server.socketUserHashMap1.get(socket1).checkInbox());
+                    dataOutputStream.flush();
                 }
 
                 if(arr[0].equalsIgnoreCase("logout")){
                     dataOutputStream.writeUTF("logout");
+                    dataOutputStream.flush();
                     socket1.close();
                     socket2.close();
                 }

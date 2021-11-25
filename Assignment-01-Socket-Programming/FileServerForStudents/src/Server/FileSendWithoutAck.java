@@ -1,4 +1,4 @@
-package FileManagement;
+package Server;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -32,6 +32,7 @@ public class FileSendWithoutAck extends Thread{
 
             // send file size
             dataOutputStream.writeLong(file.length());
+            dataOutputStream.flush();
             // break file into chunks
             byte[] buffer = new byte[4*1024];
             while ((bytes=fileInputStream.read(buffer))!=-1){

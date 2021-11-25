@@ -1,9 +1,5 @@
 package Client;
 
-import Client.Client;
-import FileManagement.FileReceiveWithAck;
-import FileManagement.FileReceiveWithoutAck;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;

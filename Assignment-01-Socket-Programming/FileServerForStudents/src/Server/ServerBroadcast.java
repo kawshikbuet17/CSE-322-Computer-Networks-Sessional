@@ -15,6 +15,7 @@ public class ServerBroadcast extends Thread{
                     if(!Server.clientSockets1.get(i).isClosed()){
                         DataOutputStream dataOutputStream = new DataOutputStream(Server.clientSockets1.get(i).getOutputStream());
                         dataOutputStream.writeUTF(message);
+                        dataOutputStream.flush();
                     }
                 }
             }
