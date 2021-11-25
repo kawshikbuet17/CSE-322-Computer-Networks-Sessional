@@ -1,28 +1,25 @@
 package Server;
 
-import FileManagement.FileReceiveProtocol;
-import FileManagement.FileSendProtocol;
-import FileManagement.FileViewProtocol;
+import FileManagement.*;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerClientInteraction extends Thread{
-    private Socket socket;
-    private Socket socketForDownload;
+    private Socket socket1;
+    private Socket socket2;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
 
-    public ServerClientInteraction(Socket socket, Socket socketForDownload) {
-        this.socket = socket;
-        this.socketForDownload = socketForDownload;
+    public ServerClientInteraction(Socket socket1, Socket socket2) {
+        this.socket1 = socket1;
+        this.socket2 = socket2;
         try {
-            dataInputStream = new DataInputStream(socket.getInputStream());
-            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            dataInputStream = new DataInputStream(socket1.getInputStream());
+            dataOutputStream = new DataOutputStream(socket1.getOutputStream());
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -39,71 +36,67 @@ public class ServerClientInteraction extends Thread{
         file.mkdir();
     }
 
-    public void downloadApproval(String path){
-
-    }
 
     @Override
     public void run(){
         try{
             String message;
             while (true) {
-                if(socket.isClosed()){
+                if(socket1.isClosed()){
                     break;
                 }
                 message = dataInputStream.readUTF();
                 System.out.println(message);
                 String []arr = message.split("\\ ");
                 if(arr[0].equalsIgnoreCase("login")){
-                    User user = new User();
-                    user.addUserName(arr[1]);
-                    Server.socketUserHashMap.put(socket, user);
-                    Server.socketUserHashMapForDownload.put(socketForDownload, user);
+                    User user = new User(arr[1]);
+                    Server.socketUserHashMap1.put(socket1, user);
+                    Server.socketUserHashMap2.put(socket2, user);
                     System.out.println("username : " + arr[1]);
                     createFolder(arr[1]);
                 }
 
                 if(arr[0].equalsIgnoreCase("upload")){
                     if(arr[2].equalsIgnoreCase("private")){
-                        FileReceiveProtocol fileReceiveProtocol = new FileReceiveProtocol(socket, "private");
-                        String userName = Server.socketUserHashMap.get(socket).username;
+                        String userName = Server.socketUserHashMap1.get(socket1).getUserName();
                         String tempFileName = userName+"_"+arr[1];
-                        fileReceiveProtocol.receiveFile(tempFileName);
-                        fileReceiveProtocol.renameAndMove(tempFileName, "Storage/"+userName+"/private/"+tempFileName);
+                        FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "private", tempFileName, "Storage/"+userName+"/private/"+tempFileName);
+                        fileReceiveWithAck.start();
                     }
                     else{
-                        FileReceiveProtocol fileReceiveProtocol = new FileReceiveProtocol(socket, "public");
-                        String userName = Server.socketUserHashMap.get(socket).username;
+                        String userName = Server.socketUserHashMap1.get(socket1).getUserName();
                         String tempFileName = userName+"_"+arr[1];
-                        fileReceiveProtocol.receiveFile(tempFileName);
-                        fileReceiveProtocol.renameAndMove(tempFileName, "Storage/"+userName+"/public/"+tempFileName);
+                        FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "public", tempFileName, "Storage/"+userName+"/public/"+tempFileName);
+                        fileReceiveWithAck.start();
                     }
                 }
 
                 if(arr[0].equalsIgnoreCase("viewfiles")){
-                    FileViewProtocol fileViewProtocol = new FileViewProtocol(socket);
-                    fileViewProtocol.viewFiles(Server.socketUserHashMap.get(socket));
+                    FileViewProtocol fileViewProtocol = new FileViewProtocol(socket1);
+                    fileViewProtocol.viewFiles(Server.socketUserHashMap1.get(socket1));
                 }
 
                 if(arr[0].equalsIgnoreCase("download")){
                     String []filename = arr[1].split("/");
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                     if(filename[2].equalsIgnoreCase("private")){
-                        if(filename[1].equalsIgnoreCase(Server.socketUserHashMap.get(socket).getName())){
-                            FileSendProtocol fileSendProtocol = new FileSendProtocol(socketForDownload, "private");
-                            fileSendProtocol.sendFile(arr[1]);
+                        if(filename[1].equalsIgnoreCase(Server.socketUserHashMap1.get(socket1).getUserName())){
+                            FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, arr[1], "private");
+                            fileSendWithoutAck.start();
                         }
                     }
                     else{
-                        FileSendProtocol fileSendProtocol = new FileSendProtocol(socketForDownload, "public");
-                        fileSendProtocol.sendFile(arr[1]);
+                        FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, arr[1], "public");
+                        fileSendWithoutAck.start();
                     }
                 }
 
                 if(arr[0].equalsIgnoreCase("online")){
                     String onlineUsers = "";
-                    for(int i=0; i<Server.clientSockets.size(); i++){
-                        if (!Server.clientSockets.get(i).isClosed()){
-                            onlineUsers += Server.socketUserHashMap.get(Server.clientSockets.get(i)).getName()+"\n";
+                    for(int i = 0; i<Server.clientSockets1.size(); i++){
+                        if (!Server.clientSockets1.get(i).isClosed()){
+                            onlineUsers += Server.socketUserHashMap1.get(Server.clientSockets1.get(i)).getUserName()+"\n";
                         }
                     }
                     dataOutputStream.writeUTF(onlineUsers);
@@ -111,8 +104,8 @@ public class ServerClientInteraction extends Thread{
 
                 if(arr[0].equalsIgnoreCase("logout")){
                     dataOutputStream.writeUTF("logout");
-                    socket.close();
-                    socketForDownload.close();
+                    socket1.close();
+                    socket2.close();
                 }
             }
         } catch (Exception e) {

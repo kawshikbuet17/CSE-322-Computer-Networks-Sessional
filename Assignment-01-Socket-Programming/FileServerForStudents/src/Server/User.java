@@ -8,24 +8,11 @@ public class User {
     List<String> privateFilenames;
     List<String> publicFilenames;
 
-    public User() {
-        privateFilenames = new ArrayList<>();
-        publicFilenames = new ArrayList<>();
-        username = "notgiven";
-    }
-
-    public void addUserName(String username){
+    public User(String username) {
         this.username = username;
     }
 
-    public String getName(){
+    public String getUserName(){
         return username;
-    }
-    public void addPrivateFile(String filename){
-        privateFilenames.add(filename);
-    }
-
-    public void addPublicFile(String filename){
-        publicFilenames.add(filename);
     }
 }

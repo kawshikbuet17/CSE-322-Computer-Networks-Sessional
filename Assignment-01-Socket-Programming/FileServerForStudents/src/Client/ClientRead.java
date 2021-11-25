@@ -1,6 +1,8 @@
 package Client;
 
 import Client.Client;
+import FileManagement.FileReceiveWithAck;
+import FileManagement.FileReceiveWithoutAck;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -8,12 +10,14 @@ import java.net.Socket;
 
 public class ClientRead extends Thread{
     private DataInputStream dataInputStream;
-    private Socket socket;
+    private Socket socket1;
+    private Socket socket2;
 
-    public ClientRead(Socket socket) {
-        this.socket = socket;
+    public ClientRead(Socket socket1, Socket socket2) {
+        this.socket1 = socket1;
+        this.socket2 = socket2;
         try{
-            dataInputStream = new DataInputStream(socket.getInputStream());
+            dataInputStream = new DataInputStream(socket1.getInputStream());
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -26,17 +30,24 @@ public class ClientRead extends Thread{
             message = "To log in type: login <your username>";
             System.out.println(message);
             while (true) {
+                message = dataInputStream.readUTF();
+                String []arr = message.split("\\ ");
                 if(message.equalsIgnoreCase("logout")){
                     System.out.println("You are logged out");
                     break;
                 }
-                message = dataInputStream.readUTF();
+
                 System.out.println(message);
-//                Client.inbox.add(message);
+
+                if(arr[0].equalsIgnoreCase("download")){
+                    String []filename = arr[1].split("/");
+                    FileReceiveWithoutAck fileReceiveWithoutAck = new FileReceiveWithoutAck(socket2, filename[3], "noneed", "noneed", "noneed");
+                    fileReceiveWithoutAck.start();
+                }
             }
             dataInputStream.close();
         }catch (Exception e){
-            ;
+            e.printStackTrace();
         }
     }
 }

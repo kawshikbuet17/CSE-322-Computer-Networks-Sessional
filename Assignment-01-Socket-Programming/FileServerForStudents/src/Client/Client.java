@@ -1,24 +1,20 @@
 package Client;
 
-import FileManagement.ClientDownload;
-
-import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
+    static int PORT1 = 8000;
+    static int PORT2 = 9000;
     public static List<String> inbox;
-    public static ClientDownload clientDownload;
     public static void main(String[] args) throws Exception{
-        Socket socket = new Socket("localhost",5000);
-        Socket downloadSocket = new Socket("localhost", 6000);
+        Socket socket1 = new Socket("localhost",PORT1);
+        Socket socket2 = new Socket("localhost", PORT2);
         inbox = new ArrayList<>();
-        ClientRead clientRead = new ClientRead(socket);
+        ClientRead clientRead = new ClientRead(socket1, socket2);
         clientRead.start();
-        ClientWrite clientWrite = new ClientWrite(socket);
+        ClientWrite clientWrite = new ClientWrite(socket1, socket2);
         clientWrite.start();
-
-        clientDownload = new ClientDownload(downloadSocket);
     }
 }

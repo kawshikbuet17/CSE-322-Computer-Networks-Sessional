@@ -24,7 +24,7 @@ public class FileViewProtocol {
         String []children = dir.list();
 
         for(int i=0; i<children.length; i++){
-            if(children[i].equalsIgnoreCase(user.getName())){
+            if(children[i].equalsIgnoreCase(user.getUserName())){
                 dir = new File("Storage/"+children[i]+"/"+"private");
                 String []privateFiles = dir.list();
 
