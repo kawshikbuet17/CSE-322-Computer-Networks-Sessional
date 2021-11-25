@@ -110,11 +110,18 @@ public class ServerClientInteraction extends Thread{
                             dataOutputStream1.flush();
                         }
                     }
+                    if(Server.socketUserHashMap1.get(socket1).getUserName().equalsIgnoreCase(userName)){
+                        Request request = new Request(Server.socketUserHashMap1.get(socket1), arr[1]);
+                        Server.requests.add(request);
+                    }
                 }
 
                 if(arr[0].equalsIgnoreCase("inbox")){
-                    dataOutputStream.writeUTF(Server.socketUserHashMap1.get(socket1).checkInbox());
+                    User user = Server.socketUserHashMap1.get(socket1);
+                    dataOutputStream.writeUTF(user.checkInbox());
                     dataOutputStream.flush();
+                    user.clearInbox();
+
                 }
 
                 if(arr[0].equalsIgnoreCase("logout")){

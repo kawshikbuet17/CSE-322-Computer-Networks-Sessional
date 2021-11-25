@@ -20,8 +20,10 @@ public class User {
         inbox = inbox + message + "\n";
     }
     public String checkInbox(){
-        String backup = inbox;
+        return inbox;
+    }
+
+    public void clearInbox(){
         inbox = "";
-        return backup;
     }
 }

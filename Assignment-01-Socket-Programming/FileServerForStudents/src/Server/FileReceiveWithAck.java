@@ -51,13 +51,17 @@ public class FileReceiveWithAck extends Thread{
             if(totalChunks==ack){
                 System.out.println(fileName+" received successfully");
                 Files.move(Paths.get(srcPath), Paths.get(destPath));
-                String []arr = srcPath.split("_");
+                String []arr = fileName.split("_");
+
+                int temp = -1;
                 for(int i =0; i< Server.requests.size(); i++){
                     if(Server.requests.get(i).getFilename().equalsIgnoreCase(arr[1])){
-                        for(int j=0; j<Server.clientSockets1.size(); j++){
-                            if(!Server.clientSockets1.get(j).isClosed()){
-                                if(Server.socketUserHashMap1.get(Server.clientSockets1.get(j)).getUserName().equalsIgnoreCase(Server.requests.get(i).getUser().getUserName())){
+                        for(int j=0; j<Server.clientSockets2.size(); j++){
+                            Socket socket = Server.clientSockets2.get(j);
+                            if(!socket.isClosed()){
+                                if(Server.socketUserHashMap2.get(socket).getUserName().equalsIgnoreCase(Server.requests.get(i).getUser().getUserName())){
                                     Server.requests.get(i).getUser().addMessage(arr[0]+ " has uploaded file "+arr[1]);
+                                    System.out.println(arr[0]+" has uploaded file " + arr[1]);
                                 }
                             }
                         }
