@@ -28,18 +28,6 @@ public class ClientWrite extends Thread{
                     FileSendWithAck fileSendWithAck = new FileSendWithAck(socket2, arr[1], arr[2]);
                     fileSendWithAck.start();
                 }
-//
-//                if(arr[0].equalsIgnoreCase("inbox")){
-//                    for(int i=0; i<Client.inbox.size(); i++){
-//                        System.out.println(Client.inbox.get(i));
-//                    }
-//                    Client.inbox.clear();
-//                }
-//
-//                if(arr[0].equalsIgnoreCase("download")){
-//                    String []filename = arr[1].split("/");
-//                    Client.clientDownload.downloadFile(filename[3]);
-//                }
             }
         } catch (Exception e) {
             e.printStackTrace();

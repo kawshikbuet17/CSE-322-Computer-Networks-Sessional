@@ -18,7 +18,7 @@ public class Server {
     public static void main(String[] args) throws Exception{
         ServerSocket serverSocket1 = new ServerSocket(PORT1);
         ServerSocket serverSocket2 = new ServerSocket(PORT2);
-        System.out.println("listening to port:5000 and 6000");
+        System.out.println("listening to port: "+ PORT1 + " , " + PORT2);
 
         clientSockets1 = new ArrayList<>();
         clientSockets2 = new ArrayList<>();

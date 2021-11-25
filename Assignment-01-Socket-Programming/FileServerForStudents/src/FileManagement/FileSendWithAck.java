@@ -1,14 +1,12 @@
 package FileManagement;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class FileSendWithAck extends Thread{
     private Socket socket;
     private DataOutputStream dataOutputStream;
+    private DataInputStream dataInputStream;
     private String privacy;
     private String path;
 
@@ -16,11 +14,8 @@ public class FileSendWithAck extends Thread{
         this.socket = socket;
         this.path = path;
         this.privacy = privacy;
-        try{
-            dataOutputStream = new DataOutputStream(socket.getOutputStream());
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+        dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        dataInputStream = new DataInputStream(socket.getInputStream());
     }
 
     @Override
@@ -32,9 +27,30 @@ public class FileSendWithAck extends Thread{
 
             // send file size
             dataOutputStream.writeLong(file.length());
+            dataOutputStream.flush();
             // break file into chunks
-            byte[] buffer = new byte[4*1024];
+            long size = file.length();
+            int chunkSize = 4*1024;
+            long totalChunks = size/chunkSize;
+            long ack = 0;
+            if(size%chunkSize != 0){
+                totalChunks++;
+            }
+            dataOutputStream.writeLong(totalChunks);
+            dataOutputStream.flush();
+            byte[] buffer = new byte[chunkSize];
             while ((bytes=fileInputStream.read(buffer))!=-1){
+                if(ack == 0){
+                    ack++;
+                }else{
+                    if(dataInputStream.readUTF().equalsIgnoreCase("ack")){
+                        ack++;
+                    }else {
+                        System.out.println("chunk not delivered");
+                        break;
+                    }
+                }
+                System.out.println("Uploaded " + 100*ack/totalChunks + "%");
                 dataOutputStream.write(buffer,0,bytes);
                 dataOutputStream.flush();
             }

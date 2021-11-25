@@ -1,6 +1,7 @@
 package FileManagement;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -41,10 +42,13 @@ public class FileReceiveWithoutAck extends Thread{
             }
             fileOutputStream.close();
             if(srcPath.equalsIgnoreCase("noneed")|| destPath.equalsIgnoreCase("noneed")){
-                ;
+                File file = new File("Downloads");
+                file.mkdir();
+                Files.move(Paths.get(fileName), Paths.get("Downloads/"+fileName));
             }else{
                 Files.move(Paths.get(srcPath), Paths.get(destPath));
             }
+            System.out.println("Download Complete");
         }catch (Exception e){
             e.printStackTrace();
         }
