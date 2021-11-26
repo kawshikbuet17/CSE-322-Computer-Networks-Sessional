@@ -1,6 +1,7 @@
 package Client;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class ClientWrite extends Thread{
     public void run(){
         try{
             while(true){
+                dataOutputStream = new DataOutputStream(socket1.getOutputStream());
                 System.out.println("1. login");
                 System.out.println("2. lookup online users");
                 System.out.println("3. request");
@@ -31,41 +33,56 @@ public class ClientWrite extends Thread{
                     System.out.println("Type your username");
                     String input = scanner.nextLine();
                     message = "login "+input;
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                 }
                 else if(message.equalsIgnoreCase("2")){
                     message = "online";
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                 }else if(message.equalsIgnoreCase("3")){
                     System.out.println("Request file name?");
                     String input = scanner.nextLine();
                     message = "request "+input;
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                 }else if(message.equalsIgnoreCase("4")){
                     System.out.println("Upload file name?");
                     String input = scanner.nextLine();
-                    message = "upload private "+input;
+                    message = "uploadf private "+input;
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
+                    File file = new File(input);
+                    dataOutputStream.writeLong(file.length());
+                    dataOutputStream.flush();
                 }else if(message.equalsIgnoreCase("5")){
                     System.out.println("Upload file name?");
                     String input = scanner.nextLine();
-                    message = "upload public "+input;
+                    message = "uploadf public "+input;
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
+                    File file = new File(input);
+                    dataOutputStream.writeLong(file.length());
+                    dataOutputStream.flush();
 
                 }else if(message.equalsIgnoreCase("6")){
                     System.out.println("Download file path?");
                     String input = scanner.nextLine();
                     message = "download "+input;
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                 }else if(message.equalsIgnoreCase("7")){
                     message = "inbox";
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                 }else if(message.equalsIgnoreCase("8")){
                     message = "viewfiles";
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                 }else if(message.equalsIgnoreCase("9")){
                     message = "logout";
-                }
-                dataOutputStream = new DataOutputStream(socket1.getOutputStream());
-                dataOutputStream.writeUTF(message);
-                dataOutputStream.flush();
-                String []arr = message.split("\\ ", 3);
-                if(arr[0].equalsIgnoreCase("upload")){
-                    System.out.println("uploading "+arr[2]+" in "+arr[1]);
-                    FileSendWithAck fileSendWithAck = new FileSendWithAck(socket2, arr[2], arr[1]);
-                    fileSendWithAck.start();
+                    dataOutputStream.writeUTF(message);
+                    dataOutputStream.flush();
                 }
             }
         } catch (Exception e) {

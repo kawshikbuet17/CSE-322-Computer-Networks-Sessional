@@ -10,12 +10,16 @@ public class FileSendWithAck extends Thread{
     private DataInputStream dataInputStream;
     private String privacy;
     private String path;
+    private long fileSize;
+    private int chunkSize;
 
 
-    public FileSendWithAck(Socket socket, String path, String privacy) throws IOException {
+    public FileSendWithAck(Socket socket, String path, String privacy, long fileSize, int chunkSize) throws IOException {
         this.socket = socket;
         this.path = path;
         this.privacy = privacy;
+        this.chunkSize = chunkSize;
+        this.fileSize = fileSize;
         dataOutputStream = new DataOutputStream(socket.getOutputStream());
         dataInputStream = new DataInputStream(socket.getInputStream());
     }
@@ -32,7 +36,6 @@ public class FileSendWithAck extends Thread{
             dataOutputStream.flush();
             // break file into chunks
             long size = file.length();
-            int chunkSize = 4*1024;
             long totalChunks = size/chunkSize;
             long ack = 0;
             if(size%chunkSize != 0){

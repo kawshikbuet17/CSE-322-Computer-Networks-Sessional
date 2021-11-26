@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class Server {
     static int PORT1 = 8000;
@@ -16,6 +17,15 @@ public class Server {
     public static List<Request> requests;
     public static List<String> singleUser;
     public static int userCount = 0;
+
+    static int MAX_CHUNK_SIZE = 4*1024;
+    static int MIN_CHUNK_SIZE = 1024;
+
+    public static int genChunkSize(){
+        Random random = new Random();
+        int temp = random.nextInt(MAX_CHUNK_SIZE-MIN_CHUNK_SIZE);
+        return temp + MIN_CHUNK_SIZE;
+    }
 
     public static void main(String[] args) throws Exception{
         ServerSocket serverSocket1 = new ServerSocket(PORT1);

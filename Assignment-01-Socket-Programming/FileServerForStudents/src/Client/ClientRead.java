@@ -1,11 +1,13 @@
 package Client;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
 public class ClientRead extends Thread{
     private DataInputStream dataInputStream;
+    private DataOutputStream dataOutputStream;
     private Socket socket1;
     private Socket socket2;
 
@@ -14,6 +16,8 @@ public class ClientRead extends Thread{
         this.socket2 = socket2;
         try{
             dataInputStream = new DataInputStream(socket1.getInputStream());
+            dataOutputStream = new DataOutputStream(socket1.getOutputStream());
+
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -40,6 +44,22 @@ public class ClientRead extends Thread{
                     String []filename = arr[1].split("/");
                     FileReceiveWithoutAck fileReceiveWithoutAck = new FileReceiveWithoutAck(socket2, filename[3], "noneed", "noneed", "noneed");
                     fileReceiveWithoutAck.start();
+                }
+
+                if(arr[0].equalsIgnoreCase("upload")){
+                    System.out.println("uploading ...");
+                    String filePath = dataInputStream.readUTF();
+                    long fileSize = dataInputStream.readLong();
+                    int chunkSize = dataInputStream.readInt();
+                    dataOutputStream.writeUTF("upload "+arr[1]+" "+filePath);
+                    dataOutputStream.flush();
+                    dataOutputStream.writeLong(fileSize);
+                    dataOutputStream.flush();
+                    dataOutputStream.writeInt(chunkSize);
+                    dataOutputStream.flush();
+
+                    FileSendWithAck fileSendWithAck = new FileSendWithAck(socket2, filePath, arr[1], fileSize, chunkSize);
+                    fileSendWithAck.start();
                 }
             }
             dataInputStream.close();

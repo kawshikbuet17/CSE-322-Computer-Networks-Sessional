@@ -15,13 +15,17 @@ public class FileReceiveWithAck extends Thread{
     private String fileName;
     private String srcPath;
     private String destPath;
+    private long fileSize;
+    private int chunkSize;
 
-    public FileReceiveWithAck(Socket socket, String fileName, String privacy, String srcPath, String destPath){
+    public FileReceiveWithAck(Socket socket, String fileName, String privacy, String srcPath, String destPath, long fileSize, int chunkSize){
         this.socket = socket;
         this.privacy = privacy;
         this.fileName = fileName;
         this.srcPath = srcPath;
         this.destPath = destPath;
+        this.chunkSize = chunkSize;
+        this.fileSize = fileSize;
         try{
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -38,7 +42,6 @@ public class FileReceiveWithAck extends Thread{
             long size = dataInputStream.readLong();     // read file size
             long totalChunks = dataInputStream.readLong();
             long ack = 0;
-            int chunkSize = 4*1024;
             byte[] buffer = new byte[chunkSize];
             while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
                 dataOutputStream.writeUTF("ack");

@@ -72,18 +72,35 @@ public class ServerClientInteraction extends Thread{
                     else{
                         if(arr[0].equalsIgnoreCase("upload")){
                             String []tempSplit = message.split(" ", 3);
+                            long fileSize = dataInputStream.readLong();
+                            int chunkSize = dataInputStream.readInt();
                             if(tempSplit[1].equalsIgnoreCase("private")){
                                 String userName = Server.socketUserHashMap1.get(socket1).getUserName();
                                 String tempFileName = userName+"_"+tempSplit[2];
-                                FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "private", tempFileName, "Storage/"+userName+"/private/"+tempFileName);
+
+                                FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "private", tempFileName, "Storage/"+userName+"/private/"+tempFileName, fileSize, chunkSize);
                                 fileReceiveWithAck.start();
                             }
                             else{
                                 String userName = Server.socketUserHashMap1.get(socket1).getUserName();
                                 String tempFileName = userName+"_"+tempSplit[2];
-                                FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "public", tempFileName, "Storage/"+userName+"/public/"+tempFileName);
+                                FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "public", tempFileName, "Storage/"+userName+"/public/"+tempFileName, fileSize, chunkSize);
                                 fileReceiveWithAck.start();
                             }
+                        }
+
+                        if(arr[0].equalsIgnoreCase("uploadf")){
+                            int chunkSize = Server.genChunkSize();
+                            long fileSize = dataInputStream.readLong();
+                            String []tempSplit = message.split(" ", 3);
+                            dataOutputStream.writeUTF("upload "+arr[1]);
+                            dataOutputStream.flush();
+                            dataOutputStream.writeUTF(tempSplit[2]);
+                            dataOutputStream.flush();
+                            dataOutputStream.writeLong(fileSize);
+                            dataOutputStream.flush();
+                            dataOutputStream.writeInt(chunkSize);
+                            dataOutputStream.flush();
                         }
 
                         if(arr[0].equalsIgnoreCase("viewfiles")){
