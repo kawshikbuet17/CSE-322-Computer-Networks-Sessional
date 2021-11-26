@@ -15,13 +15,15 @@ public class FileReceiveWithoutAck extends Thread{
     private String fileName;
     private String srcPath;
     private String destPath;
+    private int chunkSize;
 
-    public FileReceiveWithoutAck(Socket socket, String fileName, String privacy, String srcPath, String destPath){
+    public FileReceiveWithoutAck(Socket socket, String fileName, String privacy, String srcPath, String destPath, int chunkSize){
         this.socket = socket;
         this.privacy = privacy;
         this.fileName = fileName;
         this.srcPath = srcPath;
         this.destPath = destPath;
+        this.chunkSize = chunkSize;
         try{
             dataInputStream = new DataInputStream(socket.getInputStream());
         }catch (IOException e){

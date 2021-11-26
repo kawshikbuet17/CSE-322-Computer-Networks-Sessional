@@ -21,6 +21,8 @@ public class Server {
     static int MAX_CHUNK_SIZE = 4*1024;
     static int MIN_CHUNK_SIZE = 1024;
 
+    static long MAX_BUFFER_SIZE = Long.MAX_VALUE;
+
     public static int genChunkSize(){
         Random random = new Random();
         int temp = random.nextInt(MAX_CHUNK_SIZE-MIN_CHUNK_SIZE);

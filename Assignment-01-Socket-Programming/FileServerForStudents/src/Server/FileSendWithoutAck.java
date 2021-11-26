@@ -11,11 +11,13 @@ public class FileSendWithoutAck extends Thread{
     private DataOutputStream dataOutputStream;
     private String privacy;
     private String path;
+    private int chunkSize;
 
-    public FileSendWithoutAck(Socket socket, String path, String privacy) throws IOException {
+    public FileSendWithoutAck(Socket socket, String path, String privacy, int chunkSize) throws IOException {
         this.socket = socket;
         this.path = path;
         this.privacy = privacy;
+        this.chunkSize = chunkSize;
         try{
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
         }catch (IOException e){
@@ -34,7 +36,7 @@ public class FileSendWithoutAck extends Thread{
             dataOutputStream.writeLong(file.length());
             dataOutputStream.flush();
             // break file into chunks
-            byte[] buffer = new byte[4*1024];
+            byte[] buffer = new byte[chunkSize];
             while ((bytes=fileInputStream.read(buffer))!=-1){
                 dataOutputStream.write(buffer,0,bytes);
                 dataOutputStream.flush();

@@ -41,8 +41,9 @@ public class ClientRead extends Thread{
                 System.out.println(message);
 
                 if(arr[0].equalsIgnoreCase("download")){
+                    int chunkSize = dataInputStream.readInt();
                     String []filename = arr[1].split("/");
-                    FileReceiveWithoutAck fileReceiveWithoutAck = new FileReceiveWithoutAck(socket2, filename[3], "noneed", "noneed", "noneed");
+                    FileReceiveWithoutAck fileReceiveWithoutAck = new FileReceiveWithoutAck(socket2, filename[3], "noneed", "noneed", "noneed", chunkSize);
                     fileReceiveWithoutAck.start();
                 }
 

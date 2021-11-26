@@ -112,11 +112,12 @@ public class ServerClientInteraction extends Thread{
                             String []filename = arr[1].split("/");
                             dataOutputStream.writeUTF(message);
                             dataOutputStream.flush();
-
+                            dataOutputStream.writeInt(Server.MAX_CHUNK_SIZE);
+                            dataOutputStream.flush();
                             String []tempSplit = message.split("\\ ", 2);
                             if(filename[2].equalsIgnoreCase("private")){
                                 if(filename[1].equalsIgnoreCase(Server.socketUserHashMap1.get(socket1).getUserName())){
-                                    FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, tempSplit[1], "private");
+                                    FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, tempSplit[1], "private", Server.MAX_CHUNK_SIZE);
                                     fileSendWithoutAck.start();
                                 }else{
                                     dataOutputStream.writeUTF("Access Denied to others' private files");
@@ -124,7 +125,7 @@ public class ServerClientInteraction extends Thread{
                                 }
                             }
                             else{
-                                FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, tempSplit[1], "public");
+                                FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, tempSplit[1], "public", Server.MAX_CHUNK_SIZE);
                                 fileSendWithoutAck.start();
                             }
                         }
