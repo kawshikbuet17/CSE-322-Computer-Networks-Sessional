@@ -14,6 +14,7 @@ public class Server {
     public static HashMap<Socket, User> socketUserHashMap1;
     public static HashMap<Socket, User> socketUserHashMap2;
     public static List<Request> requests;
+    public static List<String> singleUser;
     public static int userCount = 0;
 
     public static void main(String[] args) throws Exception{
@@ -25,6 +26,8 @@ public class Server {
         clientSockets2 = new ArrayList<>();
         socketUserHashMap1 = new HashMap<Socket, User>();
         socketUserHashMap2 = new HashMap<Socket, User>();
+        singleUser = new ArrayList<>();
+
         requests = new ArrayList<Request>();
 
 

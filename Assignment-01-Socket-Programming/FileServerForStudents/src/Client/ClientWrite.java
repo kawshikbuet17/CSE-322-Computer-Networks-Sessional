@@ -23,7 +23,8 @@ public class ClientWrite extends Thread{
                 System.out.println("5. upload public");
                 System.out.println("6. download");
                 System.out.println("7. inbox");
-                System.out.println("8. logout");
+                System.out.println("8. viewfiles");
+                System.out.println("9. logout");
                 Scanner scanner = new Scanner(System.in);
                 String message = scanner.nextLine();
                 if(message.equalsIgnoreCase("1")){
@@ -40,11 +41,11 @@ public class ClientWrite extends Thread{
                 }else if(message.equalsIgnoreCase("4")){
                     System.out.println("Upload file name?");
                     String input = scanner.nextLine();
-                    message = "upload "+input+" private";
+                    message = "upload private "+input;
                 }else if(message.equalsIgnoreCase("5")){
                     System.out.println("Upload file name?");
                     String input = scanner.nextLine();
-                    message = "upload "+input+" public";
+                    message = "upload public "+input;
 
                 }else if(message.equalsIgnoreCase("6")){
                     System.out.println("Download file path?");
@@ -53,19 +54,22 @@ public class ClientWrite extends Thread{
                 }else if(message.equalsIgnoreCase("7")){
                     message = "inbox";
                 }else if(message.equalsIgnoreCase("8")){
+                    message = "viewfiles";
+                }else if(message.equalsIgnoreCase("9")){
                     message = "logout";
                 }
                 dataOutputStream = new DataOutputStream(socket1.getOutputStream());
                 dataOutputStream.writeUTF(message);
                 dataOutputStream.flush();
-                String []arr = message.split("\\ ");
+                String []arr = message.split("\\ ", 3);
                 if(arr[0].equalsIgnoreCase("upload")){
-                    FileSendWithAck fileSendWithAck = new FileSendWithAck(socket2, arr[1], arr[2]);
+                    System.out.println("uploading "+arr[2]+" in "+arr[1]);
+                    FileSendWithAck fileSendWithAck = new FileSendWithAck(socket2, arr[2], arr[1]);
                     fileSendWithAck.start();
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ;
         }
     }
 }

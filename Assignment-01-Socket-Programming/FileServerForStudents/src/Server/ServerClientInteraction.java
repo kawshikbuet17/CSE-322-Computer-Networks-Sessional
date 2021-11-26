@@ -47,11 +47,21 @@ public class ServerClientInteraction extends Thread{
                 System.out.println(message);
                 String []arr = message.split("\\ ");
                 if(arr[0].equalsIgnoreCase("login")){
-                    User user = new User(arr[1]);
-                    Server.socketUserHashMap1.put(socket1, user);
-                    Server.socketUserHashMap2.put(socket2, user);
-                    System.out.println("username : " + arr[1]);
-                    createFolder(arr[1]);
+                    if(!Server.singleUser.contains(arr[1])){
+                        User user = new User(arr[1]);
+                        Server.socketUserHashMap1.put(socket1, user);
+                        Server.socketUserHashMap2.put(socket2, user);
+                        System.out.println("username : " + arr[1]);
+                        createFolder(arr[1]);
+                        Server.singleUser.add(arr[1]);
+                    }
+                    else{
+                        dataOutputStream.writeUTF("User already exists..");
+                        dataOutputStream.flush();
+                        dataOutputStream.close();
+                        socket1.close();
+                        socket2.close();
+                    }
                 }
 
                 if(!arr[0].equalsIgnoreCase("login")){
@@ -61,15 +71,16 @@ public class ServerClientInteraction extends Thread{
                     }
                     else{
                         if(arr[0].equalsIgnoreCase("upload")){
-                            if(arr[2].equalsIgnoreCase("private")){
+                            String []tempSplit = message.split(" ", 3);
+                            if(tempSplit[1].equalsIgnoreCase("private")){
                                 String userName = Server.socketUserHashMap1.get(socket1).getUserName();
-                                String tempFileName = userName+"_"+arr[1];
+                                String tempFileName = userName+"_"+tempSplit[2];
                                 FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "private", tempFileName, "Storage/"+userName+"/private/"+tempFileName);
                                 fileReceiveWithAck.start();
                             }
                             else{
                                 String userName = Server.socketUserHashMap1.get(socket1).getUserName();
-                                String tempFileName = userName+"_"+arr[1];
+                                String tempFileName = userName+"_"+tempSplit[2];
                                 FileReceiveWithAck fileReceiveWithAck = new FileReceiveWithAck(socket2, tempFileName, "public", tempFileName, "Storage/"+userName+"/public/"+tempFileName);
                                 fileReceiveWithAck.start();
                             }
@@ -84,9 +95,11 @@ public class ServerClientInteraction extends Thread{
                             String []filename = arr[1].split("/");
                             dataOutputStream.writeUTF(message);
                             dataOutputStream.flush();
+
+                            String []tempSplit = message.split("\\ ", 2);
                             if(filename[2].equalsIgnoreCase("private")){
                                 if(filename[1].equalsIgnoreCase(Server.socketUserHashMap1.get(socket1).getUserName())){
-                                    FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, arr[1], "private");
+                                    FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, tempSplit[1], "private");
                                     fileSendWithoutAck.start();
                                 }else{
                                     dataOutputStream.writeUTF("Access Denied to others' private files");
@@ -94,7 +107,7 @@ public class ServerClientInteraction extends Thread{
                                 }
                             }
                             else{
-                                FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, arr[1], "public");
+                                FileSendWithoutAck fileSendWithoutAck = new FileSendWithoutAck(socket2, tempSplit[1], "public");
                                 fileSendWithoutAck.start();
                             }
                         }
@@ -114,15 +127,16 @@ public class ServerClientInteraction extends Thread{
 
                         if(arr[0].equalsIgnoreCase("request")){
                             String userName = Server.socketUserHashMap1.get(socket1).getUserName();
+                            String []tempSplit = message.split(" ", 2);
                             for(int i=0; i<Server.clientSockets1.size(); i++){
                                 if(!Server.clientSockets1.get(i).isClosed()){
                                     DataOutputStream dataOutputStream1 = new DataOutputStream(Server.clientSockets1.get(i).getOutputStream());
-                                    dataOutputStream1.writeUTF(userName+ " requested for file "+arr[1]);
+                                    dataOutputStream1.writeUTF(userName+ " requested for file "+tempSplit[1]);
                                     dataOutputStream1.flush();
                                 }
                             }
                             if(Server.socketUserHashMap1.get(socket1).getUserName().equalsIgnoreCase(userName)){
-                                Request request = new Request(Server.socketUserHashMap1.get(socket1), arr[1]);
+                                Request request = new Request(Server.socketUserHashMap1.get(socket1), tempSplit[1]);
                                 Server.requests.add(request);
                             }
                         }
@@ -138,6 +152,7 @@ public class ServerClientInteraction extends Thread{
                         if(arr[0].equalsIgnoreCase("logout")){
                             dataOutputStream.writeUTF("logout");
                             dataOutputStream.flush();
+                            dataOutputStream.close();
                             socket1.close();
                             socket2.close();
                         }

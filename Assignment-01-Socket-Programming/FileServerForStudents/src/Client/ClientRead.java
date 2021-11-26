@@ -23,14 +23,12 @@ public class ClientRead extends Thread{
     public void run(){
         try{
             String message;
-            message = "To log in type: login <your username>";
-            System.out.println(message);
             while (true) {
                 if(socket1.isClosed() || socket2.isClosed()){
                     break;
                 }
                 message = dataInputStream.readUTF();
-                String []arr = message.split("\\ ");
+                String []arr = message.split("\\ ", 2);
                 if(message.equalsIgnoreCase("logout")){
                     System.out.println("You are logged out");
                     break;
@@ -46,7 +44,7 @@ public class ClientRead extends Thread{
             }
             dataInputStream.close();
         }catch (Exception e){
-            e.printStackTrace();
+            ;
         }
     }
 }

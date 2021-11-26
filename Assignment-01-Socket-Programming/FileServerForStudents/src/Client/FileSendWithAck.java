@@ -2,6 +2,7 @@ package Client;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Paths;
 
 public class FileSendWithAck extends Thread{
     private Socket socket;
@@ -9,6 +10,7 @@ public class FileSendWithAck extends Thread{
     private DataInputStream dataInputStream;
     private String privacy;
     private String path;
+
 
     public FileSendWithAck(Socket socket, String path, String privacy) throws IOException {
         this.socket = socket;
@@ -55,7 +57,9 @@ public class FileSendWithAck extends Thread{
                         System.out.println("Time out while receiving acknowledgement");
                     }
                 }
-                System.out.println("Uploaded " + 100*ack/totalChunks + "%");
+                if(ack==totalChunks){
+                    System.out.println("Uploaded 100%");
+                }
                 dataOutputStream.write(buffer,0,bytes);
                 dataOutputStream.flush();
             }
