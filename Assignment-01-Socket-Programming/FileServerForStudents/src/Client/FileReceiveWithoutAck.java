@@ -50,7 +50,7 @@ public class FileReceiveWithoutAck extends Thread{
             }
             System.out.println("Download Complete");
         }catch (Exception e){
-            e.printStackTrace();
+            System.out.println("Error in file receiving");
         }
     }
 }

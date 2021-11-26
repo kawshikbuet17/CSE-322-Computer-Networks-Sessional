@@ -26,6 +26,9 @@ public class ClientRead extends Thread{
             message = "To log in type: login <your username>";
             System.out.println(message);
             while (true) {
+                if(socket1.isClosed() || socket2.isClosed()){
+                    break;
+                }
                 message = dataInputStream.readUTF();
                 String []arr = message.split("\\ ");
                 if(message.equalsIgnoreCase("logout")){

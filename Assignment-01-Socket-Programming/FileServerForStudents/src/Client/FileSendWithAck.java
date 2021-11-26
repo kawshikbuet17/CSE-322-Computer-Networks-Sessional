@@ -43,11 +43,16 @@ public class FileSendWithAck extends Thread{
                 if(ack == 0){
                     ack++;
                 }else{
-                    if(dataInputStream.readUTF().equalsIgnoreCase("ack")){
-                        ack++;
-                    }else {
-                        System.out.println("chunk not delivered");
-                        break;
+                    socket.setSoTimeout(30000);
+                    try{
+                        if(dataInputStream.readUTF().equalsIgnoreCase("ack")){
+                            ack++;
+                        }else {
+                            System.out.println("chunk not delivered");
+                            break;
+                        }
+                    }catch (Exception e){
+                        System.out.println("Time out while receiving acknowledgement");
                     }
                 }
                 System.out.println("Uploaded " + 100*ack/totalChunks + "%");
@@ -56,8 +61,7 @@ public class FileSendWithAck extends Thread{
             }
             fileInputStream.close();
         }catch (Exception e){
-            e.printStackTrace();
+            System.out.println("Error in file sending");
         }
-
     }
 }

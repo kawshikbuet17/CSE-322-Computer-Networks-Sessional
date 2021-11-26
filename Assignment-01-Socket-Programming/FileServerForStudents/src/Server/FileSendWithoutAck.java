@@ -42,7 +42,7 @@ public class FileSendWithoutAck extends Thread{
             fileInputStream.close();
             System.out.println(path+" Download Procedure Completed");
         }catch (Exception e){
-            e.printStackTrace();
+            System.out.println("Error in file sending");
         }
     }
 }
