@@ -92,15 +92,22 @@ public class ServerClientInteraction extends Thread{
                         if(arr[0].equalsIgnoreCase("uploadf")){
                             int chunkSize = Server.genChunkSize();
                             long fileSize = dataInputStream.readLong();
-                            String []tempSplit = message.split(" ", 3);
-                            dataOutputStream.writeUTF("upload "+arr[1]);
-                            dataOutputStream.flush();
-                            dataOutputStream.writeUTF(tempSplit[2]);
-                            dataOutputStream.flush();
-                            dataOutputStream.writeLong(fileSize);
-                            dataOutputStream.flush();
-                            dataOutputStream.writeInt(chunkSize);
-                            dataOutputStream.flush();
+                            if(Server.AVAILABLE_BUFFER_SIZE>fileSize){
+                                Server.AVAILABLE_BUFFER_SIZE -= fileSize;
+                                String []tempSplit = message.split(" ", 3);
+                                dataOutputStream.writeUTF("upload "+arr[1]);
+                                dataOutputStream.flush();
+                                dataOutputStream.writeUTF(tempSplit[2]);
+                                dataOutputStream.flush();
+                                dataOutputStream.writeLong(fileSize);
+                                dataOutputStream.flush();
+                                dataOutputStream.writeInt(chunkSize);
+                                dataOutputStream.flush();
+                            }
+                            else{
+                                dataOutputStream.writeUTF("Buffer is busy. Try Again later");
+                                dataOutputStream.flush();
+                            }
                         }
 
                         if(arr[0].equalsIgnoreCase("viewfiles")){

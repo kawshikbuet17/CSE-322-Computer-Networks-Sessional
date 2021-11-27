@@ -75,9 +75,11 @@ public class FileReceiveWithAck extends Thread{
                 File file = new File(srcPath);
                 file.delete();
             }
+            Server.AVAILABLE_BUFFER_SIZE += fileSize;
 
         }catch (Exception e){
             System.out.println("Error in file receiving");
+            Server.AVAILABLE_BUFFER_SIZE = (int) Math.min(Server.AVAILABLE_BUFFER_SIZE+fileSize, Server.MAX_BUFFER_SIZE);
         }
     }
 }

@@ -21,7 +21,8 @@ public class Server {
     static int MAX_CHUNK_SIZE = 4*1024;
     static int MIN_CHUNK_SIZE = 1024;
 
-    static long MAX_BUFFER_SIZE = Long.MAX_VALUE;
+    static int MAX_BUFFER_SIZE = 2000000000;
+    static int AVAILABLE_BUFFER_SIZE = MAX_BUFFER_SIZE;
 
     public static int genChunkSize(){
         Random random = new Random();
