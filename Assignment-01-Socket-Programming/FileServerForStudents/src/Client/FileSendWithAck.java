@@ -54,7 +54,7 @@ public class FileSendWithAck extends Thread{
                             ack++;
                         }else {
                             System.out.println("chunk not delivered");
-                            break;
+                            return;
                         }
                     }catch (Exception e){
                         System.out.println("Time out while receiving acknowledgement");

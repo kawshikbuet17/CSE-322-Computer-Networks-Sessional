@@ -29,7 +29,7 @@ public class FileViewProtocol {
                 String []privateFiles = dir.list();
 
                 for(int j=0; j<privateFiles.length; j++){
-                    message+= "Storage/"+children[i]+"/"+"private/"+privateFiles[j]+"\n";
+                    message+= children[i]+"_"+"private_"+privateFiles[j]+"\n";
                 }
             }
 
@@ -37,7 +37,7 @@ public class FileViewProtocol {
             String []publicFiles = dir.list();
 
             for(int j=0; j<publicFiles.length; j++){
-                message+= "Storage/"+children[i]+"/"+"public/"+publicFiles[j]+"\n";
+                message+= children[i]+"_"+"public_"+publicFiles[j]+"\n";
             }
         }
         dataOutputStream.writeUTF(message);

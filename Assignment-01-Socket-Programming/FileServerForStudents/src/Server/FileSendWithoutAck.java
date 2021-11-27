@@ -30,6 +30,7 @@ public class FileSendWithoutAck extends Thread{
         try{
             int bytes = 0;
             File file = new File(path);
+            System.out.println(path);
             FileInputStream fileInputStream = new FileInputStream(file);
 
             // send file size

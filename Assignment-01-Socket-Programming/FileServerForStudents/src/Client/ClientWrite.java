@@ -66,7 +66,7 @@ public class ClientWrite extends Thread{
                     dataOutputStream.flush();
 
                 }else if(message.equalsIgnoreCase("6")){
-                    System.out.println("Download file path?");
+                    System.out.println("Download file id?");
                     String input = scanner.nextLine();
                     message = "download "+input;
                     dataOutputStream.writeUTF(message);
